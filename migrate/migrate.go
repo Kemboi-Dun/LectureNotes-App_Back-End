@@ -11,17 +11,10 @@ func init() {
 }
 
 func main() {
-	initializers.DB.AutoMigrate(&models.User{},
-		&models.Folder{},
+	initializers.DB.AutoMigrate(
+		&models.User{},
 		&models.File{},
 		&models.FileAccess{},
-		&models.Course{},
-		&models.Year{},
-		&models.CourseType{},
-		&models.SemesterName{},
-		&models.Semester{},
-		&models.CourseClass{},
-		&models.Unit{},
 		&models.Comment{},
 	)
 }
