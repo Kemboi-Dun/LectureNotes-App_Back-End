@@ -16,5 +16,6 @@ func main() {
 		&models.File{},
 		&models.FileAccess{},
 		&models.Comment{},
+		&models.Article{},
 	)
 }

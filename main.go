@@ -47,6 +47,13 @@ func main() {
 	r.PUT("/comment/:id", controllers.UpdateComment)
 	r.DELETE("/comment/:id", controllers.DeleteComment)
 
+	// ARTICLE END POINTS
+	r.POST("/article", controllers.ArticleCreate)
+	r.GET("/articles", controllers.GetArticles)
+	r.GET("/article/:id", controllers.GetArticleId)
+	r.PUT("/article/:id", controllers.UpdateArticle)
+	r.DELETE("/article/:id", controllers.DeleteArticle)
+
 	// HANDLE CORS
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},

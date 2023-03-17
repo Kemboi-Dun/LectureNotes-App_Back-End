@@ -12,20 +12,20 @@ import (
 func UserCreate(c *gin.Context) {
 	// GET DATA OFF A REQUEST
 	var user_body struct {
-		FirstName string
-		LastName  string
-		Email     string
-		Password  string
-		Role      string
+		Username string
+		Role     string
+		School   string
+		Email    string
+		Password string
 	}
 	c.Bind(&user_body)
 	// CREATE A USER
 	user := models.User{
-		FirstName: user_body.FirstName,
-		LastName:  user_body.LastName,
-		Email:     user_body.Email,
-		Password:  user_body.Password,
-		Role:      user_body.Role,
+		Username: user_body.Username,
+		Role:     user_body.Role,
+		School:   user_body.School,
+		Email:    user_body.Email,
+		Password: user_body.Password,
 	}
 	result := initializers.DB.Create(&user)
 
@@ -70,11 +70,11 @@ func UpdateUser(c *gin.Context) {
 	id := c.Param("id")
 	// GET DATA FROM REQ BODY
 	var user_body struct {
-		FirstName string
-		LastName  string
-		Email     string
-		Password  string
-		Role      string
+		Username string
+		Role     string
+		School   string
+		Email    string
+		Password string
 	}
 	c.Bind(&user_body)
 
@@ -83,11 +83,11 @@ func UpdateUser(c *gin.Context) {
 	initializers.DB.First(&user, id)
 	// UPDATE USER
 	initializers.DB.Model(&user).Updates(models.User{
-		FirstName: user_body.FirstName,
-		LastName:  user_body.LastName,
-		Email:     user_body.Email,
-		Password:  user_body.Password,
-		Role:      user_body.Role,
+		Username: user_body.Username,
+		Role:     user_body.Role,
+		School:   user_body.School,
+		Email:    user_body.Email,
+		Password: user_body.Password,
 	})
 	// RETURN UPDATED USER
 	c.JSON(http.StatusOK, gin.H{
