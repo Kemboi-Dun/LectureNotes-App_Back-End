@@ -13,9 +13,10 @@ func init() {
 func main() {
 	initializers.DB.AutoMigrate(
 		&models.User{},
-		&models.File{},
+		&models.Documet{},
 		&models.FileAccess{},
 		&models.Comment{},
 		&models.Article{},
+		&models.Doc{},
 	)
 }

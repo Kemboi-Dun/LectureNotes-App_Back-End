@@ -1,7 +1,11 @@
 package controllers
 
 import (
+	"fmt"
+	"io"
+	"log"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/kemboi-dun/initializers"
@@ -10,6 +14,7 @@ import (
 
 // *!CREATE A FILE
 func FileCreate(c *gin.Context) {
+
 	// GET DATA OFF A REQUEST
 	var file_body struct {
 		Name       string
@@ -27,10 +32,18 @@ func FileCreate(c *gin.Context) {
 		Type       string
 	}
 	c.Bind(&file_body)
+
+	// single file
+	file, _ := c.FormFile("file")
+	log.Println(file.Filename)
+
+	// Upload the file to specific dst.
+	c.SaveUploadedFile(file, "assets/uploads/"+file.Filename)
+
 	// CREATE A FILE
-	file := models.File{
+	document := models.Documet{
 		Name:       file_body.Name,
-		Path:       file_body.Path,
+		Path:       "assets/uploads/" + file.Filename,
 		AuthorID:   file_body.AuthorID,
 		FolderID:   file_body.FolderID,
 		Size:       file_body.Size,
@@ -43,27 +56,30 @@ func FileCreate(c *gin.Context) {
 		AuthorName: file_body.AuthorName,
 		Type:       file_body.Type,
 	}
-	result := initializers.DB.Create(&file)
+	result := initializers.DB.Create(&document)
 
 	if result.Error != nil {
 		c.Status(400)
 		return
 	}
+
+	c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", file.Filename))
+
 	// RETURN A FILE
 	c.JSON(http.StatusOK, gin.H{
-		"file": file,
+		"document": document,
 	})
 }
 
 // *!GET FILES
 func GetFiles(c *gin.Context) {
 	// GET FILES
-	var files []models.File
-	initializers.DB.Find(&files)
+	var documents []models.Documet
+	initializers.DB.Find(&documents)
 
 	// RESPOND WITH FILE
 	c.JSON(http.StatusOK, gin.H{
-		"files": files,
+		"documents": documents,
 	})
 }
 
@@ -72,12 +88,12 @@ func GetFileId(c *gin.Context) {
 	// GET ID FROM URL
 	id := c.Param("id")
 	// GET FILE
-	var file models.File
-	initializers.DB.First(&file, id)
+	var document models.Documet
+	initializers.DB.First(&document, id)
 
 	// RETURN UPDATED FILE
 	c.JSON(http.StatusOK, gin.H{
-		"file": file,
+		"document": document,
 	})
 }
 
@@ -103,13 +119,20 @@ func UpdateFile(c *gin.Context) {
 	}
 	c.Bind(&file_body)
 
+	// single file
+	file, _ := c.FormFile("file")
+	log.Println(file.Filename)
+
 	// GET FILE
-	var file models.File
-	initializers.DB.First(&file, id)
+	var document models.Documet
+	initializers.DB.First(&document, id)
+
+	url := "localhost:3000/"
+
 	// UPDATE FILE
-	initializers.DB.Model(&file).Updates(models.File{
+	initializers.DB.Model(&document).Updates(models.Documet{
 		Name:       file_body.Name,
-		Path:       file_body.Path,
+		Path:       url + "assets/uploads/" + file.Filename,
 		AuthorID:   file_body.AuthorID,
 		FolderID:   file_body.FolderID,
 		Size:       file_body.Size,
@@ -124,7 +147,7 @@ func UpdateFile(c *gin.Context) {
 	})
 	// RETURN UPDATED FILE
 	c.JSON(http.StatusOK, gin.H{
-		"file": file,
+		"document": document,
 	})
 }
 
@@ -134,11 +157,33 @@ func DeleteFile(c *gin.Context) {
 	id := c.Param("id")
 
 	// GET file
-	var file models.File
-	initializers.DB.Delete(&file, id)
+	var document models.Documet
+	initializers.DB.Delete(&document, id)
 
 	// RETURN UPDATED FILE
 	c.JSON(http.StatusOK, gin.H{
 		"Message": "Record deleted succesfully...",
 	})
+}
+
+func DownloadFile(c *gin.Context) {
+	// Get the file ID or file name from the request parameters
+	fileID := c.Param("fileId")
+
+	// Open the file from the local file system
+	filePath := "/assets/uploads/" + fileID
+	file, err := os.Open(filePath)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+	defer file.Close()
+
+	// Set the response headers to indicate that a file is being downloaded
+	c.Writer.Header().Set("Content-Disposition", "inline; filename="+fileID)
+	c.Writer.Header().Set("Content-Type", "application/octet-stream")
+	// c.Writer.Header().Set("Content-Length", strconv.FormatInt(fileInfo.Size(), 10))
+
+	// Stream the file to the response
+	io.Copy(c.Writer, file)
 }

@@ -14,12 +14,16 @@ func CommentCreate(c *gin.Context) {
 	var comment_body struct {
 		AuthorName string
 		Body       string
+		AuthorID   int
+		FolderID   int
 	}
 	c.Bind(&comment_body)
 	// CREATE A comment
 	comment := models.Comment{
 		AuthorName: comment_body.AuthorName,
 		Body:       comment_body.Body,
+		AuthorID:   comment_body.AuthorID,
+		FolderID:   comment_body.FolderID,
 	}
 	result := initializers.DB.Create(&comment)
 
@@ -47,7 +51,7 @@ func GetComments(c *gin.Context) {
 // *! EDIT comment
 func GetCommentId(c *gin.Context) {
 	// GET ID FROM URL
-	id := c.Param("id")
+	id := c.Param("folder_id")
 	// GET comment
 	var comment models.Comment
 	initializers.DB.First(&comment, id)
@@ -66,6 +70,8 @@ func UpdateComment(c *gin.Context) {
 	var comment_body struct {
 		AuthorName string
 		Body       string
+		AuthorID   int
+		FolderID   int
 	}
 	c.Bind(&comment_body)
 
@@ -76,6 +82,8 @@ func UpdateComment(c *gin.Context) {
 	initializers.DB.Model(&comment).Updates(models.Comment{
 		AuthorName: comment_body.AuthorName,
 		Body:       comment_body.Body,
+		AuthorID:   comment_body.AuthorID,
+		FolderID:   comment_body.FolderID,
 	})
 	// RETURN UPDATED comment
 	c.JSON(http.StatusOK, gin.H{

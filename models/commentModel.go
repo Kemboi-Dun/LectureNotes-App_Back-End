@@ -7,4 +7,6 @@ type Comment struct {
 
 	AuthorName string
 	Body       string
+	AuthorID   int
+	FolderID   int
 }

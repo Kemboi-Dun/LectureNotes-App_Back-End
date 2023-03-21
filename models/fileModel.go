@@ -2,7 +2,7 @@ package models
 
 import "gorm.io/gorm"
 
-type File struct {
+type Documet struct {
 	gorm.Model
 	Name       string
 	Path       string
@@ -14,7 +14,7 @@ type File struct {
 	CourseName string
 	Semester   string
 	UnitName   string
-	UnitCode string
+	UnitCode   string
 	AuthorName string
 	Type       string
 }

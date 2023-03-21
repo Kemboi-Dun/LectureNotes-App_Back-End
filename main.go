@@ -54,6 +54,23 @@ func main() {
 	r.PUT("/article/:id", controllers.UpdateArticle)
 	r.DELETE("/article/:id", controllers.DeleteArticle)
 
+	// DOCUMENT END POINTS
+	r.POST("/DOC", controllers.UploadDoc)
+	r.GET("/docs", controllers.GetDoc)
+	r.GET("/doc/:id", controllers.GetDocId)
+	r.PUT("/doc/:id", controllers.UpdateDoc)
+	r.DELETE("/doc/:id", controllers.DeleteDoc)
+
+	// r.GET("/view_file", func(c *gin.Context) {
+	// 	filePath := "/assets/uploads/"  // Replace with the actual file path on your server
+	// 	fileName := "KEMBOI DUNCAN.pdf" // Replace with the actual file name
+	// 	c.Header("Content-Disposition", "inline; filename="+fileName)
+	// 	c.Header("Content-Type", "application/octet-stream")
+	// 	c.File(filePath)
+	// })
+
+	r.GET("/DOC_DOWNLOAD/:fileId", controllers.DownloadFile)
+
 	// HANDLE CORS
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
