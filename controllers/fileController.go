@@ -2,10 +2,8 @@ package controllers
 
 import (
 	"fmt"
-	"io"
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/kemboi-dun/initializers"
@@ -42,7 +40,7 @@ func FileCreate(c *gin.Context) {
 
 	// CREATE A FILE
 	document := models.Documet{
-		Name:       file_body.Name,
+		Name:       file.Filename,
 		Path:       "assets/uploads/" + file.Filename,
 		AuthorID:   file_body.AuthorID,
 		FolderID:   file_body.FolderID,
@@ -83,8 +81,9 @@ func GetFiles(c *gin.Context) {
 	})
 }
 
-// *! EDIT file
+// *! GET DOCUMENT BY ID
 func GetFileId(c *gin.Context) {
+
 	// GET ID FROM URL
 	id := c.Param("id")
 	// GET FILE
@@ -131,7 +130,7 @@ func UpdateFile(c *gin.Context) {
 
 	// UPDATE FILE
 	initializers.DB.Model(&document).Updates(models.Documet{
-		Name:       file_body.Name,
+		Name:       file.Filename,
 		Path:       url + "assets/uploads/" + file.Filename,
 		AuthorID:   file_body.AuthorID,
 		FolderID:   file_body.FolderID,
@@ -166,24 +165,24 @@ func DeleteFile(c *gin.Context) {
 	})
 }
 
-func DownloadFile(c *gin.Context) {
-	// Get the file ID or file name from the request parameters
-	fileID := c.Param("fileId")
+// func DownloadFile(c *gin.Context) {
+// 	// Get the file ID or file name from the request parameters
+// 	fileID := c.Param("fileId")
 
-	// Open the file from the local file system
-	filePath := "/assets/uploads/" + fileID
-	file, err := os.Open(filePath)
-	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
-		return
-	}
-	defer file.Close()
+// 	// Open the file from the local file system
+// 	filePath := "/assets/uploads/" + fileID
+// 	file, err := os.Open(filePath)
+// 	if err != nil {
+// 		c.AbortWithError(http.StatusInternalServerError, err)
+// 		return
+// 	}
+// 	defer file.Close()
 
-	// Set the response headers to indicate that a file is being downloaded
-	c.Writer.Header().Set("Content-Disposition", "inline; filename="+fileID)
-	c.Writer.Header().Set("Content-Type", "application/octet-stream")
-	// c.Writer.Header().Set("Content-Length", strconv.FormatInt(fileInfo.Size(), 10))
+// 	// Set the response headers to indicate that a file is being downloaded
+// 	c.Writer.Header().Set("Content-Disposition", "attachment; filename="+fileID)
+// 	c.Writer.Header().Set("Content-Type", "application/octet-stream")
+// 	// c.Writer.Header().Set("Content-Length", strconv.FormatInt(fileInfo.Size(), 10))
 
-	// Stream the file to the response
-	io.Copy(c.Writer, file)
-}
+// 	// Stream the file to the response
+// 	io.Copy(c.Writer, file)
+// }
